@@ -1,8 +1,8 @@
-name: Remote Android Build
+name: Build for Raspberry Pi (ARM64)
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
@@ -14,9 +14,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2️⃣ Setup Rust (fixed)
+      # 2️⃣ Setup Rust (fixed action name)
       - name: Setup Rust
-        uses: actions/setup-rust@v1
+        uses: rust-lang/setup-rust@v1
         with:
           rust-version: stable
 
