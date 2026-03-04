@@ -1,4 +1,4 @@
-name: Build for Raspberry Pi (ARM64)
+name: Remote Android Build
 
 on:
   push:
@@ -14,9 +14,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2️⃣ Setup Rust
+      # 2️⃣ Setup Rust using the correct action
       - name: Setup Rust
-        uses: actions/setup-rust@v1
+        uses: rust-lang/actions/setup-rust@v1
         with:
           rust-version: stable
 
@@ -24,7 +24,7 @@ jobs:
       - name: Add ARM64 target
         run: rustup target add aarch64-unknown-linux-gnu
 
-      # 4️⃣ Install cross compiler
+      # 4️⃣ Install ARM64 cross compiler
       - name: Install ARM64 cross compiler
         run: sudo apt-get update && sudo apt-get install -y gcc-aarch64-linux-gnu
 
