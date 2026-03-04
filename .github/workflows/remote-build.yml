@@ -1,4 +1,4 @@
-name: Remote Android Build
+name: Build for Raspberry Pi (ARM64)
 
 on:
   push:
@@ -10,21 +10,42 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      # 1️⃣ Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - uses: dtolnay/rust-toolchain@stable
+      # 2️⃣ Setup Rust
+      - name: Setup Rust
+        uses: actions/setup-rust@v1
+        with:
+          rust-version: stable
 
-      - name: Install Android target
-        run: rustup target add aarch64-linux-android
+      # 3️⃣ Add ARM64 target for Raspberry Pi
+      - name: Add ARM64 target
+        run: rustup target add aarch64-unknown-linux-gnu
 
-      - name: Install cross compiler
+      # 4️⃣ Install cross compiler
+      - name: Install ARM64 cross compiler
         run: sudo apt-get update && sudo apt-get install -y gcc-aarch64-linux-gnu
 
-      - name: Build release
-        run: cargo build --release --target aarch64-linux-android
+      # 5️⃣ Set linker for cross-compilation
+      - name: Set linker
+        run: echo "CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-linux-gnu-gcc" >> $GITHUB_ENV
 
-      - name: Upload binary
-        uses: actions/upload-artifact@v4
-        with:
-          name: android-binary
-          path: target/aarch64-linux-android/release/polars-covid
+      # 6️⃣ Build release for ARM64
+      - name: Build release for ARM64
+        run: cargo build --release --target aarch64-unknown-linux-gnu
+
+      # 7️⃣ Commit target/release folder to 'precompiled' branch
+      - name: Commit precompiled release
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+
+          # Create precompiled branch
+          git checkout -B precompiled
+
+          # Force add the ARM64 release folder
+          git add -f target/aarch64-unknown-linux-gnu/release/
+          git commit -m "Update precompiled target/release for ARM64"
+          git push -u origin precompiled --force
