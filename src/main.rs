@@ -2,6 +2,8 @@ mod downloader;
 mod processor;
 mod utils;
 
+use std::fs::File;
+use polars::prelude::*;
 use std::error::Error;
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -18,10 +20,12 @@ fn main() -> Result<(), Box<dyn Error>> {
     let df_2022 = processor::filter_2022(&df)?;
 
     // Step 4: Aggregate total cases by country
-    let total_cases = processor::total_cases_by_country(&df_2022)?;
+    let mut total_cases = processor::total_cases_by_country(&df_2022)?;
 
     // Step 5: Save processed CSV
-    total_cases.write_csv(processed_path)?;
+    let mut file = File::create(processed_path)?;
+    CsvWriter::new(&mut file)
+        .finish(&mut total_cases)?;
 
     println!("Analysis complete. Results saved in {}", processed_path);
     Ok(())
