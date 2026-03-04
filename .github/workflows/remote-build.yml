@@ -2,7 +2,7 @@ name: Remote Android Build
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
@@ -14,9 +14,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2️⃣ Setup Rust using the correct action
+      # 2️⃣ Setup Rust (fixed)
       - name: Setup Rust
-        uses: rust-lang/actions/setup-rust@v1
+        uses: actions/setup-rust@v1
         with:
           rust-version: stable
 
